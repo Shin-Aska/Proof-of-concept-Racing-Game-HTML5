@@ -10,6 +10,10 @@ var fpsHolder = document.getElementById("fps");
 var distanceHolder = document.getElementById("distance");
 var totalDistanceHolder = document.getElementById("total_distance");
 
+// We create an image buffer
+var background_img = ctx.createImageData(c.width, c.height);
+var pixels = new Uint32Array(background_img.data.buffer);
+
 // Objects 
 var Assets = {
 	car: null,
@@ -61,6 +65,49 @@ async function loadImage(src) {
 // Performance metrics for our game loop
 var dt;
 var lastUpdateFrame = performance.now();
+
+// This function is a bit slow but well the idea is
+// we will manipulate the buffer first initialized in line 13
+// because apparently fastRect is REALLY SLOW
+function fastRect (canvas, pixels, minx, miny, maxx, maxy, color) {
+    
+    var width = canvas.width;
+    var height = canvas.height;
+	
+	var r = color[0];
+	var g = color[1];
+	var b = color[2];
+    
+    if (minx < 0) minx = 0;
+    else if (minx > width) minx = width;
+    else minx = minx|0;
+    
+    if (miny < 0) miny = 0;
+    else if (miny > height) miny = height;
+    else miny = miny|0;
+    
+    if (maxx < 0) maxx = 0;
+    else if (maxx > width) maxx = width;
+    else maxx = maxx|0;
+    
+    if (maxy < 0) maxy = 0;
+    else if (maxy > height) maxy = height;
+    else maxy = maxy|0;
+    
+    var colour =  255 << 24 | (0.5 + b * 255) << 16 | (0.5 + g * 255) << 8 | (0.5 + r * 255);
+    
+    for (var y = miny; y < maxy; ++y) {
+        
+        var i = y * width;
+        
+        for (var x = minx; x < maxx; ++x) {
+            
+            pixels[i + x] = colour;
+            
+        }
+    }
+    
+};
 
 async function main() {
 	totalDistanceHolder.innerHTML = total_distance;
@@ -120,8 +167,9 @@ async function main() {
 		if (Car.speed > 1.0) Car.speed = 1;
 		
 		Player.distance += (200 * Car.speed) * dt_t;
-		
-		for (var y = 0; y < height / 2; y++) {
+		// Pre compute half of the height to make it a little bit faster
+		var half_height = height / 2;
+		for (var y = 0; y < half_height; y++) {
 			for (var x = 0; x < width; x++) {
 			
 				var perspective = y / (height / 2.0);
@@ -136,31 +184,38 @@ async function main() {
 				var rightGrass = (middlePoint + roadWidth + clipWidth) * width;
 				var rightClip = (middlePoint + roadWidth) * width;
 				
-				var row = height / 2 + y;
+				var row = half_height + y;
 				
-				// Colors depending on distance of the pixel
-				var grassColor = Math.sin(20.0 * Math.pow(1.0 - perspective, 3) + Player.distance * 0.1) > 0.0 ? "green" : "darkgreen";
+				// Uncomment this one if you are going to use the fillRect instead of our custom fastRect function
+				// var grassColor = Math.sin(20.0 * Math.pow(1.0 - perspective, 3) + Player.distance * 0.1) > 0.0 ? "green" : "darkgreen";
+				var grassColor = Math.sin(20.0 * Math.pow(1.0 - perspective, 3) + Player.distance * 0.1) > 0.0 ? [0.2, 0.8, 0.1] : [0.3, 0.7, 0.1];
 				
-				var clipColor = Math.sin(80.0 * Math.pow(1.0 - perspective, 3) + Player.distance * 0.5) > 0.0 ? "red" : "white";
+				//var clipColor = Math.sin(80.0 * Math.pow(1.0 - perspective, 3) + Player.distance * 0.5) > 0.0 ? "red" : "white";
+				var clipColor = Math.sin(80.0 * Math.pow(1.0 - perspective, 3) + Player.distance * 0.5) > 0.0 ? [0.8, 0.2, 0.1] : [1, 1, 1];
+				var chosenColor;
 				
 				if (x >= 0 && x < leftGrass) {
-					ctx.fillStyle = grassColor;
+					chosenColor = grassColor;
 				}
 				if (x >= leftGrass && x < leftClip) {
-					ctx.fillStyle = clipColor;
+					chosenColor = clipColor;
 				}
 				if (x >= leftClip && x < rightClip) {
-					ctx.fillStyle = "grey";
+					//ctx.fillStyle = "grey";
+					chosenColor = [0.2, 0.2, 0.2];
 				}
 				if (x >= rightClip && x < rightGrass) {
-					ctx.fillStyle = clipColor;
+					chosenColor = clipColor;
 				}
 				if (x >= rightGrass && x < width) {
-					ctx.fillStyle = grassColor;
+					chosenColor = grassColor;
 				}
-				ctx.fillRect(x, row, 2, 2);
+				//ctx.fillRect(x, row, 1, 1);
+				fastRect(c, pixels, x, row, x+1, row+1, chosenColor);
 			}
 		}
+		// Our buffer will be drawn in a single call instead
+		ctx.putImageData(background_img, 0, 0);
 		Car.position = Car.inertia - Car.perspective.curviture;
 		var rendered_CarPosition = width / 2 + ((width * Car.position) / 2.0) - 25;
 		if (carDirection == 0) {
