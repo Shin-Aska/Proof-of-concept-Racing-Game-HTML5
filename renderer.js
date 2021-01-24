@@ -17,6 +17,7 @@ var pixels = new Uint32Array(background_img.data.buffer);
 // Objects 
 var Assets = {
 	car: null,
+	finishLine: null,
 	backgrounds: {
 		city1: null
 	}
@@ -37,16 +38,25 @@ var Car = {
 	}
 }
 
+var audio;
+
 var tracks = {
 	list: [
 		{"curviture": 0.0, "distance": 100},
 		{"curviture": 1.0, "distance": 500},
 		{"curviture": 0.0, "distance": 500},
 		{"curviture": -0.1, "distance": 500},
-		{"curviture": 0.0, "distance": 1000}
+		{"curviture": 0.0, "distance": 1000},
+		{"curviture": 2.0, "distance": 100},
+		{"curviture": 1.0, "distance": 500},
+		{"curviture": 0.0, "distance": 500},
+		{"curviture": -0.1, "distance": 500},
+		{"curviture": 0.0, "distance": 1000},
+		{"curviture": 0.0, "distance": 500}
 	]
 }
 
+var last_distance = tracks.list[tracks.list.length - 1].distance;
 var total_distance = 0;
 tracks.list.forEach((track) => {
 	total_distance += track.distance;
@@ -114,6 +124,9 @@ async function main() {
 	// Asset loading procedures
 	Assets.car = await loadImage("car.png");
 	Assets.backgrounds.city1 = await loadImage("bg.png");
+	Assets.finishLine = await loadImage("finish-line.png");
+	audio = new Audio('binary_heavens.mp3');
+	audio.play();
 	
 	
 	// The actual game loop, lol
@@ -127,6 +140,7 @@ async function main() {
 		distance.innerHTML = Math.round(Player.distance);
 		
 		if (total_distance <= Player.distance) {
+			audio.pause();
 			alert("Game Over");
 			return;
 		}
@@ -147,7 +161,7 @@ async function main() {
 		var carDirection = 0;
 		
 		if (keys[K_UP]) {
-			Car.speed += 2.0 * dt_t;
+			Car.speed += 0.08 * dt_t;
 		}
 		else {
 			Car.speed -= 1.0 * dt_t;
@@ -166,7 +180,22 @@ async function main() {
 		if (Car.speed < 0.0) Car.speed = 0;
 		if (Car.speed > 1.0) Car.speed = 1;
 		
-		Player.distance += (200 * Car.speed) * dt_t;
+		var momentum = 100;
+		if (Car.position > -0.6 && Car.position < 0.6) {
+			if (Car.position > -0.2 && Car.position < 0.2) {
+				momentum = 200;
+			}
+			else {
+				momentum = 100;
+			}
+		}
+		else {
+			momentum = 50;
+		}
+		Player.distance += (momentum * Car.speed) * dt_t;
+		if (Player.distance >= total_distance) {
+			Player.distance = total_distance;
+		}
 		// Pre compute half of the height to make it a little bit faster
 		var half_height = height / 2;
 		for (var y = 0; y < half_height; y++) {
@@ -228,7 +257,14 @@ async function main() {
 			ctx.drawImage(Assets.car, 195, 30, 60, 35, rendered_CarPosition, 160, 50, 30);
 		}
 		
-		ctx.drawImage(Assets.backgrounds.city1, 400, 70 + (70 * Player.distance / total_distance), width, height / 2, 0, 0, width, height / 2);
+		ctx.drawImage(Assets.backgrounds.city1, 400, 60 + (10 * Player.distance / total_distance), width, height / 2, 0, 0, width, height / 2);
+		
+		
+		if (Player.track == tracks.list.length && false) {
+			//var car_
+			ctx.drawImage(Assets.finishLine, 5, 90, 395, 90)
+			ctx.drawImage(Assets.finishLine, 170, 80, 60, 20);
+		}
 		lastUpdateFrame = now;
 		window.requestAnimationFrame(window.gameloop);
 	}
