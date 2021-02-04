@@ -1,0 +1,146 @@
+@font-face {
+    font-family: Digital;
+    src: url(digital-7/digital-7.ttf);
+}
+
+body {
+    background-color: skyblue;
+}
+
+#car_speed {
+    font-family: Digital;
+    font-size: 32pt;
+    width: 30px;
+    display: inline-block;
+    padding-right: 40px;
+}
+
+.carSpeedBarContainer {
+    display: inline-block;
+    width: 100px;
+}
+
+#carSpeedBar {
+    padding: 0.01em 0.1px;
+    background-color: #4CAF50 !important;
+}
+
+.container {
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+}
+
+.key {
+    /*
+    If you want to change the size of the key you can write:
+    transform: scale(0.5);
+    */
+    position: relative;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    width: 20rem;
+    height: 20rem;
+    overflow: hidden;
+    background-color: #b7ad9b;
+    border: 1rem solid #857e71;
+    border-radius: 3rem;
+    cursor: pointer;
+    transition: 0.1s;
+}
+
+.key::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    width: 90%;
+    height: 90%;
+    border: 1rem solid #d9ccbc;
+    border-radius: 2rem;
+}
+
+.key:active {
+    box-shadow: inset 0 -10rem 7rem #857e71;
+}
+
+.key:active .text {
+    width: 11rem;
+    height: 11rem;
+    font-size: 9rem;
+}
+
+.key:active .text {
+    width: 11rem;
+    height: 11rem;
+    font-size: 9rem;
+    box-shadow: 0 -10rem 10rem 3rem #f6e5d6, inset 0rem 1rem 2rem #baaf9e;
+}
+
+.key .text {
+    position: relative;
+    top: 2rem;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 12rem;
+    height: 12rem;
+    font-size: 10rem;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #009bd1;
+    background-color: #eee0ce;
+    border: 1rem solid #f6e5d6;
+    border-radius: 3rem;
+    box-shadow: 0 -10rem 10rem 3rem #f6e5d6, inset 0rem -0.8rem 2rem #baaf9e;
+    transition: 0.1s;
+    -webkit-user-select: none;
+    -moz-user-select: -moz-none;
+    user-select: none;
+    -khtml-user-select: none;
+    -o-user-select: none;
+}
+
+
+/*angle-shadow*/
+
+.angle-shadow {
+    position: absolute;
+}
+
+.angle-shadow.top-section {
+    top: 3rem;
+    width: 7rem;
+    height: 0.5rem;
+    background-color: #f6e5d6;
+    box-shadow: 0 0 1rem #f6e5d6;
+}
+
+.angle-shadow.bottom-section {
+    bottom: 0rem;
+    border-right: 1rem solid transparent;
+    border-bottom: 9rem solid #dfd2bf;
+    border-left: 1rem solid transparent;
+}
+
+.angle-shadow.left-top {
+    left: 0.5rem;
+    transform: rotate(36deg);
+}
+
+.angle-shadow.right-top {
+    right: 0.5rem;
+    transform: rotate(-36deg);
+}
+
+.angle-shadow.left-bottom {
+    left: 2.5rem;
+    transform: rotate(30deg);
+}
+
+.angle-shadow.right-bottom {
+    right: 2.5rem;
+    transform: rotate(-30deg);
+}

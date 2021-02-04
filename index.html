@@ -1,16 +1,67 @@
 <!DOCTYPE html>
 <html>
-	<head>
-	</head>
-	<body>
-		<div>FPS <b id="fps">???</b></div>
-		<div>Distance <b id="distance">???</b></div>
-		<div>Total distance <b id="total_distance">???</b></div>
-		<center>
-			<canvas id="game-window" width="400" height="200" style="-webkit-transform:scale(3, 3); margin-top: 220px;">
+
+<head>
+    <title>Proof of Concept Racing Demo</title>
+    <link href="design.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <div>FPS <b id="fps">???</b></div>
+    <div>Progress <b id="lap_progress">0%</b></div>
+    <div style="text-align: center;">
+        <div class="carSpeedBarContainer">
+            <div id="carSpeedBar" class="" style="height:24px"></div>
+        </div>
+        &nbsp;&nbsp;&nbsp;
+        <b id="car_speed">0</b> km/h
+    </div>
+    <center style="height:600px;">
+        <canvas id="game-window" width="400" height="200" style="-webkit-transform:scale(3, 3); margin-top: 220px; border: 2px solid black;">
 			</canvas>
-		</center>
-	</body>
-	<script src="input.js"></script>
-	<script src="renderer.js"></script>
+    </center>
+    <script src="input.js"></script>
+    <script src="renderer.js"></script>
+    <center>
+        <h2 style="margin-top: 50px; margin-bottom: -50px;">Instructions - Controls</h2>
+        <div class="container" style="-webkit-transform: scale(0.15); margin-top: -80px; margin-bottom: -200px;" onmousedown="forceLeft()" onmouseup="unforceLeft()">
+            <div class="key" type="button">
+                <span class="text">←</span>
+                <div class="angle-shadow left-top top-section"></div>
+                <div class="angle-shadow right-top top-section"></div>
+                <div class="angle-shadow left-bottom bottom-section"></div>
+                <div class="angle-shadow right-bottom bottom-section"></div>
+            </div>
+        </div>
+        <div style="display: inline; margin-left: -130px;">
+            Turn Left
+        </div>
+        <div class="container" style="-webkit-transform: scale(0.15); margin-top: -80px; margin-bottom: -200px;" onmousedown="forceUp()" onmouseup="unforceUp()">
+            <div class="key" type="button">
+                <span class="text">↑</span>
+                <div class="angle-shadow left-top top-section"></div>
+                <div class="angle-shadow right-top top-section"></div>
+                <div class="angle-shadow left-bottom bottom-section"></div>
+                <div class="angle-shadow right-bottom bottom-section"></div>
+            </div>
+        </div>
+        <div style="display: inline; margin-left: -130px;">
+            Accelerate
+        </div>
+        <div class="container" style="-webkit-transform: scale(0.15); margin-top: -80px; margin-bottom: -200px;" onmousedown="forceRight()" onmousedown="unforceRight()">
+            <div class="key" type="button">
+                <span class="text">→</span>
+                <div class="angle-shadow left-top top-section"></div>
+                <div class="angle-shadow right-top top-section"></div>
+                <div class="angle-shadow left-bottom bottom-section"></div>
+                <div class="angle-shadow right-bottom bottom-section"></div>
+            </div>
+        </div>
+        <div style="display: inline; margin-left: -130px;">
+            Turn Right
+        </div>
+    </center>
+
+</body>
+
 </html>
